@@ -5,7 +5,7 @@ services:
     name: mctelles-portfolio-api
     runtime: node
     plan: free
-    region: virginia
+    region: ohio
     # devDependencies são necessárias no runtime: prisma (migrate) e tsx (seed)
     buildCommand: npm ci --include=dev && npm run build -w @portfolio/api
     # Aplica migrations, garante o admin e sobe a API

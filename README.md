@@ -183,7 +183,7 @@ O navegador só conversa com o domínio da Vercel: ela repassa `/api/*` para o R
 
 ### 1. Banco (Neon)
 
-1. Crie um projeto em [neon.tech](https://neon.tech) (região AWS us-east-1, perto do Render em Virginia).
+1. Crie um projeto em [neon.tech](https://neon.tech) (região AWS us-east-2, a mesma do Render em Ohio).
 2. Copie a connection string **direta** (sem `-pooler` no host), com `?sslmode=require`.
 
 ### 2. Imagens (Cloudflare R2)

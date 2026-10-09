@@ -20,6 +20,11 @@ const seedEnv = z
     ADMIN_NAME: z.string().min(1).default('Admin'),
     ADMIN_EMAIL: z.email().toLowerCase(),
     ADMIN_PASSWORD: z.string().min(12, 'ADMIN_PASSWORD deve ter pelo menos 12 caracteres'),
+    /** Perfil, skills e projetos de exemplo. Em produção: false (o conteúdo vem do painel). */
+    SEED_DEMO_CONTENT: z
+      .enum(['true', 'false'])
+      .default('true')
+      .transform((value) => value === 'true'),
   })
   .parse(process.env);
 
@@ -107,6 +112,11 @@ async function main() {
     },
   });
   if (passwordChanged) console.log('Senha do admin alterada: sessões anteriores foram revogadas.');
+
+  if (!seedEnv.SEED_DEMO_CONTENT) {
+    console.log(`Seed concluído: admin ${seedEnv.ADMIN_EMAIL} (sem conteúdo de exemplo).`);
+    return;
+  }
 
   await prisma.profile.upsert({ where: { id: 1 }, create: { ...profile, id: 1 }, update: {} });
 

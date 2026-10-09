@@ -1,0 +1,56 @@
+# Blueprint do Render: New → Blueprint → selecione este repositório.
+# Valores marcados com `sync: false` são pedidos no painel na criação (nunca ficam no git).
+services:
+  - type: web
+    name: mctelles-portfolio-api
+    runtime: node
+    plan: free
+    region: virginia
+    # devDependencies são necessárias no runtime: prisma (migrate) e tsx (seed)
+    buildCommand: npm ci --include=dev && npm run build -w @portfolio/api
+    # Aplica migrations, garante o admin e sobe a API
+    startCommand: npm run start:prod -w @portfolio/api
+    healthCheckPath: /api/health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - apps/api/**
+        - packages/shared/**
+        - package.json
+        - package-lock.json
+        - render.yaml
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL # Neon: connection string direta (sem "-pooler"), com sslmode=require
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEB_ORIGIN # URL do site na Vercel, ex.: https://portfolio.vercel.app
+        sync: false
+      - key: TRUST_PROXY_HOPS # Vercel (rewrite /api) + balanceador do Render
+        value: '2'
+      - key: STORAGE_DRIVER
+        value: s3
+      - key: S3_ENDPOINT # https://<account-id>.r2.cloudflarestorage.com
+        sync: false
+      - key: S3_REGION
+        value: auto
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_PUBLIC_URL # https://pub-xxxx.r2.dev (acesso público do bucket)
+        sync: false
+      - key: ADMIN_NAME
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD # mínimo 12 caracteres
+        sync: false
+      - key: SEED_DEMO_CONTENT
+        value: 'false'
+      - key: LOG_LEVEL
+        value: info

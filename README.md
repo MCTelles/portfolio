@@ -167,8 +167,57 @@ Erros seguem sempre o formato `{ "error": { "code", "message", "details?" } }`.
 
 **Geral:** Helmet, CORS restrito a `WEB_ORIGIN`, env validado no boot.
 
-### Deploy: pontos de atenção
+## Deploy (Vercel + Render + Neon + Cloudflare R2)
 
-- O cookie usa `SameSite=Strict`. Sirva web e API **no mesmo domínio** (ex.: reverse proxy `/api` → API). Se ficarem em domínios diferentes, defina `VITE_API_URL` e ajuste a política do cookie em `apps/api/src/modules/auth/cookie.ts`.
-- Uploads ficam em disco (`UPLOAD_DIR`). Em hosts com disco efêmero, implemente `StorageService` para S3/R2 em `apps/api/src/lib/storage/`: nenhum outro arquivo precisa mudar.
-- Em produção, rode `npm run db:deploy -w @portfolio/api` (aplica migrations sem criar novas).
+```
+navegador ──► Vercel (site estático)
+                 │  /api/*  (rewrite: mesma origem, cookie SameSite=Strict funciona)
+                 ▼
+              Render (API, plano gratuito) ──► Neon (PostgreSQL)
+                                          └──► Cloudflare R2 (imagens de capa)
+```
+
+O navegador só conversa com o domínio da Vercel: ela repassa `/api/*` para o Render
+(`apps/web/vercel.json`). Por isso não há CORS nem cookie de terceiros, e a API confia em
+2 proxies (`TRUST_PROXY_HOPS=2`) para enxergar o IP real do visitante no rate limit.
+
+### 1. Banco (Neon)
+
+1. Crie um projeto em [neon.tech](https://neon.tech) (região AWS us-east-1, perto do Render em Virginia).
+2. Copie a connection string **direta** (sem `-pooler` no host), com `?sslmode=require`.
+
+### 2. Imagens (Cloudflare R2)
+
+1. No painel da Cloudflare: R2 → crie o bucket (ex.: `portfolio`).
+2. Em _Settings_ do bucket, habilite o **acesso público** (`r2.dev`) e copie a URL `https://pub-….r2.dev`.
+3. R2 → _Manage API tokens_ → crie um token com permissão **Object Read & Write** só nesse bucket.
+   Anote _Access Key ID_, _Secret Access Key_ e o endpoint `https://<account-id>.r2.cloudflarestorage.com`.
+
+### 3. API (Render)
+
+1. Render → **New → Blueprint** → selecione este repositório (ele lê o `render.yaml`).
+2. Preencha as variáveis pedidas: `DATABASE_URL` (Neon), `S3_*` (R2), `ADMIN_NAME`,
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD` (mínimo 12 caracteres) e `WEB_ORIGIN` (URL da Vercel; pode
+   ajustar depois). O `JWT_SECRET` é gerado pelo próprio Render.
+3. A cada deploy o start roda `prisma migrate deploy` e o seed (só o admin, sem conteúdo de
+   exemplo, porque `SEED_DEMO_CONTENT=false`). Teste em `https://<serviço>.onrender.com/api/health`.
+4. Se o Render der ao serviço uma URL diferente de `mctelles-portfolio-api.onrender.com`,
+   atualize os dois `destination` em `apps/web/vercel.json`.
+
+> **Plano gratuito:** a API dorme após 15 min sem acesso e leva ~1 min para acordar. O 3D
+> carrega normalmente; projetos e perfil esperam a API. Para evitar, configure um monitor
+> gratuito (ex.: UptimeRobot) chamando `/api/health` a cada 10 min.
+
+### 4. Site (Vercel)
+
+1. Vercel → **Add New → Project** → importe este repositório.
+2. **Root Directory:** `apps/web`. O resto vem do `apps/web/vercel.json` (instala na raiz do monorepo, build do Vite, rewrites e cache).
+3. Depois do primeiro deploy, coloque a URL final em `WEB_ORIGIN` no Render.
+4. Entre em `https://<seu-site>/admin` com o admin definido no Render e preencha perfil,
+   habilidades e projetos (as capas vão para o R2).
+
+### Produção: pontos de atenção
+
+- Cada push na `main` gera deploy nos dois serviços (o Render só reconstrói quando algo da API muda, via `buildFilter`).
+- Uploads ficam no R2 (`STORAGE_DRIVER=s3`); o disco do Render é apagado a cada deploy.
+- Para levar o conteúdo do banco local para o Neon: `pg_dump` do banco local e `psql` no Neon (as migrations já estão aplicadas).

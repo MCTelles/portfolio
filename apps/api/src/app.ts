@@ -46,7 +46,7 @@ export function createApp(): Express {
   const app = express();
 
   app.disable('x-powered-by');
-  app.set('trust proxy', 1);
+  app.set('trust proxy', env.TRUST_PROXY_HOPS);
 
   // As imagens podem ser exibidas por um frontend em outra origem (produção).
   app.use(requestContext);

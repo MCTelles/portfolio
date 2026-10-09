@@ -11,3 +11,6 @@ coverage/
 apps/api/uploads/*
 !apps/api/uploads/.gitkeep
 apps/api/src/generated/
+
+# Configuração local de ferramentas (Claude Code)
+.claude/

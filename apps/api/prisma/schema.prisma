@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique
+  name         String
+  passwordHash String     @map("password_hash")
+  /// Incrementado no logout/troca de senha: invalida todos os JWTs emitidos antes.
+  tokenVersion Int        @default(0) @map("token_version")
+  auditLogs    AuditLog[]
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  @@map("admin_users")
+}
+
+model Project {
+  id          String         @id @default(uuid()) @db.Uuid
+  title       String
+  slug        String         @unique
+  summary     String
+  description String         @db.Text
+  stack       String[]
+  repoUrl     String?        @map("repo_url")
+  deployUrl   String?        @map("deploy_url")
+  featured    Boolean        @default(false)
+  published   Boolean        @default(false)
+  order       Int            @default(0)
+  images      ProjectImage[]
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  @@index([published, order])
+  @@map("projects")
+}
+
+model ProjectImage {
+  id         String   @id @default(uuid()) @db.Uuid
+  url        String
+  storageKey String   @unique @map("storage_key")
+  alt        String   @default("")
+  order      Int      @default(0)
+  width      Int?
+  height     Int?
+  projectId  String   @map("project_id") @db.Uuid
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([projectId, order])
+  @@map("project_images")
+}
+
+enum SkillCategory {
+  FRONTEND
+  BACKEND
+  MOBILE
+  DEVOPS
+  TOOLS
+}
+
+model Skill {
+  id       String        @id @default(uuid()) @db.Uuid
+  name     String        @unique
+  category SkillCategory
+  level    Int?
+  order    Int           @default(0)
+
+  @@index([category, order])
+  @@map("skills")
+}
+
+/// Registro único (id = 1) com os dados da seção "Sobre".
+model Profile {
+  id        Int      @id @default(1)
+  name      String
+  headline  String
+  bio       String   @db.Text
+  location  String?
+  avatarUrl String?  @map("avatar_url")
+  socials   Json     @default("[]")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profile")
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGIN_FAILED
+  LOGOUT
+}
+
+/// Trilha de auditoria append-only: um trigger no banco bloqueia UPDATE/DELETE
+/// (ver migration). `actorEmail` é um snapshot: continua legível se o admin for removido.
+model AuditLog {
+  id          String      @id @default(uuid()) @db.Uuid
+  action      AuditAction
+  entity      String
+  entityId    String?     @map("entity_id")
+  /// Nome legível da entidade no momento da ação (o registro pode já ter sido apagado).
+  entityLabel String?     @map("entity_label")
+  changes     Json?
+  adminId     String?     @map("admin_id") @db.Uuid
+  admin       AdminUser?  @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  actorEmail  String?     @map("actor_email")
+  ip          String?
+  userAgent   String?     @map("user_agent")
+  requestId   String?     @map("request_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
+  @@index([entity, entityId])
+  @@index([adminId])
+  @@map("audit_logs")
+}

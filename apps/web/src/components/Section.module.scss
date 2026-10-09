@@ -1,0 +1,60 @@
+@use '@/styles/mixins' as *;
+
+.section {
+  width: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+  padding-block: var(--space-section) 0;
+}
+
+.split {
+  display: grid;
+  gap: var(--space-7);
+
+  @include up(md) {
+    grid-template-columns: 1.5fr 1fr;
+    align-items: start;
+    column-gap: var(--space-8);
+  }
+}
+
+.main {
+  min-width: 0;
+}
+
+.header {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-7);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-muted);
+  @include timing-label;
+}
+
+// Bloco vermelho inclinado com o número, como a faixa de posição na TV
+.number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 22px;
+  padding-inline: var(--space-2);
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  transform: skewX(var(--skew));
+}
+
+.title {
+  max-width: 20ch;
+  font-size: var(--fs-3xl);
+}
+
+.lead {
+  max-width: 60ch;
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+}

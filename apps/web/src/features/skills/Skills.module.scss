@@ -1,0 +1,155 @@
+@use '@/styles/mixins' as *;
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-bottom: var(--space-5);
+  color: var(--color-text-muted);
+  @include timing-label;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+
+    &::before {
+      content: '';
+      width: 18px;
+      height: 4px;
+      background: var(--tier-color);
+    }
+  }
+}
+
+[data-tier='purple'] {
+  --tier-color: var(--color-sector-purple);
+}
+[data-tier='green'] {
+  --tier-color: var(--color-sector-green);
+}
+[data-tier='yellow'] {
+  --tier-color: var(--color-sector-yellow);
+}
+[data-tier='white'] {
+  --tier-color: #d8dbe2;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+
+  @include up(sm) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include up(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// Painel no estilo da torre de tempos da transmissão
+.tower {
+  --team: var(--color-accent);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.towerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--team) 28%, transparent),
+    transparent 80%
+  );
+  border-bottom: 2px solid var(--team);
+
+  h3 {
+    font-size: var(--fs-base);
+    font-style: italic;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  span {
+    color: var(--color-text-muted);
+    @include timing-label;
+  }
+}
+
+.list {
+  display: grid;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 22px 4px 3.2em 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  transition: background var(--duration);
+
+  &:first-child {
+    border-top: none;
+  }
+
+  &:hover {
+    background: var(--color-surface-hover);
+  }
+
+  // Barra fina com a cor da "equipe", entre a posição e a sigla
+  &::before {
+    content: '';
+    grid-column: 2;
+    grid-row: 1;
+    width: 4px;
+    height: 18px;
+    background: var(--team);
+  }
+}
+
+.position {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--color-text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-align: right;
+}
+
+.code {
+  grid-column: 3;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meter {
+  display: inline-flex;
+  gap: 3px;
+
+  span {
+    width: 10px;
+    height: 12px;
+    background: rgb(255 255 255 / 0.08);
+    transform: skewX(var(--skew));
+  }
+
+  .on {
+    background: var(--tier-color);
+  }
+}

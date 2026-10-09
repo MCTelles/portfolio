@@ -1,0 +1,72 @@
+// Tokens de design. Valores consumidos como CSS custom properties em runtime;
+// os breakpoints ficam em SCSS porque media queries não aceitam var().
+
+$breakpoints: (
+  sm: 640px,
+  md: 900px,
+  lg: 1200px,
+);
+
+:root {
+  color-scheme: dark;
+
+  // Cores: preto de box, vermelho F1 e as cores de cronometragem
+  --color-bg: #08090c;
+  --color-bg-elevated: #0e0f14;
+  --color-surface: #121319;
+  --color-surface-hover: #181a22;
+  --color-border: rgb(255 255 255 / 0.08);
+  --color-border-strong: rgb(255 255 255 / 0.16);
+  --color-text: #f2f3f5;
+  --color-text-muted: #9097a6;
+  --color-text-subtle: #5e6474;
+  --color-accent: #e10600;
+  --color-accent-strong: #ff3b2f;
+  --color-danger: #ff5c5c;
+  --color-success: #22d36b;
+  --color-sector-purple: #b14cff;
+  --color-sector-green: #22d36b;
+  --color-sector-yellow: #ffd21f;
+  --gradient-accent: linear-gradient(100deg, #ff3b2f 0%, #e10600 50%, #ff7a1a 100%);
+
+  // Tipografia: Titillium Web nos títulos (a fonte dos grafismos clássicos da F1),
+  // mono tabular para números de telemetria
+  --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Titillium Web', var(--font-sans);
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --fs-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-2xl: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+  --fs-3xl: clamp(2.25rem, 1.6rem + 3vw, 4rem);
+  --fs-hero: clamp(3rem, 1.1rem + 5vw, 7rem);
+
+  // Espaçamento (escala de 4px)
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-section: clamp(5rem, 3rem + 8vw, 10rem);
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+
+  // Forma e movimento
+  // Cantos secos, como peças de carbono
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-pill: 999px;
+  /** Inclinação dos elementos "em movimento" (botões, faixas, badges). */
+  --skew: -12deg;
+  --container: 1200px;
+  --nav-height: 72px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration: 240ms;
+  --shadow-lg: 0 30px 80px -20px rgb(0 0 0 / 0.6);
+}

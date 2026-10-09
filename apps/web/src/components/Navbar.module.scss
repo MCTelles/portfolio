@@ -1,0 +1,95 @@
+@use '@/styles/mixins' as *;
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 10;
+  height: var(--nav-height);
+  border-bottom: 1px solid transparent;
+  transition:
+    background var(--duration) var(--ease-out),
+    border-color var(--duration) var(--ease-out);
+}
+
+.scrolled {
+  @include glass(0.75);
+  border-bottom-color: var(--color-border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100% - 2 * var(--gutter), var(--container));
+  height: 100%;
+  margin-inline: auto;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.flag {
+  width: 22px;
+  height: 16px;
+  @include checkered(4px);
+  transform: skewX(var(--skew));
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+
+  @include up(sm) {
+    gap: var(--space-6);
+  }
+
+  a {
+    color: var(--color-text-muted);
+    @include timing-label;
+    transition: color var(--duration);
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+}
+
+.hideMobile {
+  display: none;
+
+  @include up(sm) {
+    display: list-item;
+  }
+}
+
+// Chamada para o contato: faixa vermelha inclinada
+.box {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  transform: skewX(var(--skew));
+  transition: background var(--duration);
+
+  .links & {
+    color: #fff;
+  }
+
+  span {
+    display: inline-block;
+    transform: skewX(calc(var(--skew) * -1));
+  }
+
+  &:hover {
+    background: var(--color-accent-strong);
+  }
+}

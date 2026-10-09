@@ -1,0 +1,156 @@
+@use '@/styles/mixins' as *;
+
+.bio {
+  display: grid;
+  gap: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xl);
+  line-height: 1.5;
+
+  p:first-child {
+    color: var(--color-text);
+  }
+}
+
+// Ficha de piloto: faixa quadriculada no topo, placa com as iniciais
+.card {
+  @include card;
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  overflow: hidden;
+}
+
+.cardStripe {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10px;
+  @include checkered(5px, rgb(255 255 255 / 0.85));
+  opacity: 0.9;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.avatar,
+.plate {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  object-fit: cover;
+}
+
+.plate {
+  display: grid;
+  place-items: center;
+  background: var(--color-bg-elevated);
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.role {
+  color: var(--color-accent-strong);
+  @include timing-label;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.headline {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+
+  // Caixas da mesma linha têm a mesma altura; o número vai para a base para os dois
+  // ficarem alinhados mesmo quando um rótulo quebra em duas linhas.
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border-left: 2px solid var(--color-accent);
+    background: rgb(255 255 255 / 0.03);
+  }
+
+  dd {
+    margin-top: auto;
+  }
+
+  dt {
+    color: var(--color-text-subtle);
+    @include timing-label;
+    font-size: 0.625rem;
+  }
+
+  dd {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+  }
+}
+
+.location {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.radio {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.radioLabel {
+  color: var(--color-text-subtle);
+  @include timing-label;
+  font-size: 0.625rem;
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+
+  a {
+    display: inline-flex;
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    transition:
+      border-color var(--duration),
+      background var(--duration);
+
+    &:hover {
+      border-color: var(--color-accent);
+      background: rgb(225 6 0 / 0.1);
+    }
+  }
+}
+
+.skeleton {
+  @include card;
+  height: 240px;
+  opacity: 0.6;
+}

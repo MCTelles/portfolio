@@ -1,0 +1,102 @@
+@use '@/styles/mixins' as *;
+
+.footer {
+  position: relative;
+  margin-top: var(--space-section);
+  background: radial-gradient(ellipse at 50% 130%, rgb(225 6 0 / 0.22), transparent 60%);
+}
+
+// Bandeira quadriculada de ponta a ponta: fim de corrida
+.checkered {
+  height: 24px;
+  @include checkered(12px, rgb(255 255 255 / 0.92));
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-5);
+  width: min(100% - 2 * var(--gutter), var(--container));
+  margin-inline: auto;
+  padding-block: var(--space-8) var(--space-6);
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  @include timing-label;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 4px rgb(225 6 0 / 0.25);
+  animation: radio 1.6s ease-in-out infinite;
+}
+
+.cta {
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 0.95;
+  text-transform: uppercase;
+
+  span {
+    display: block;
+    @include gradient-text;
+    padding-right: 0.08em;
+  }
+}
+
+.lead {
+  max-width: 52ch;
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+}
+
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  justify-self: start;
+  padding-bottom: var(--space-1);
+  border-bottom: 2px solid var(--color-accent);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  transition: color var(--duration);
+
+  &:hover {
+    color: var(--color-accent-strong);
+  }
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-subtle);
+  font-size: var(--fs-sm);
+
+  ul {
+    display: flex;
+    gap: var(--space-5);
+  }
+
+  a:hover {
+    color: var(--color-text);
+  }
+}
+
+@keyframes radio {
+  50% {
+    box-shadow: 0 0 0 8px rgb(225 6 0 / 0);
+  }
+}

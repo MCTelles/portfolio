@@ -1,0 +1,105 @@
+@use '@/styles/mixins' as *;
+
+.race {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+  transition:
+    opacity var(--duration),
+    visibility var(--duration);
+
+  &[data-visible='true'] {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.vertical {
+  display: none;
+
+  @include up(lg) {
+    position: fixed;
+    z-index: 9;
+    top: 50%;
+    right: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 32px;
+    transform: translateY(-50%);
+  }
+
+  @media (min-width: 1440px) {
+    right: max(8px, calc((100vw - var(--container)) / 4 - 20px));
+    width: 40px;
+  }
+}
+
+.caption,
+.percent {
+  color: var(--color-text-subtle);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.caption {
+  text-transform: uppercase;
+}
+
+.percent {
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.circuit {
+  width: 100%;
+  height: min(56svh, 500px);
+  overflow: visible;
+}
+
+.car {
+  filter: drop-shadow(0 0 3px rgb(225 6 0 / 0.4));
+}
+
+.mobile {
+  position: fixed;
+  z-index: 11;
+  top: calc(var(--nav-height) - 1px);
+  right: var(--gutter);
+  left: var(--gutter);
+  height: 2px;
+  background: rgb(144 151 166 / 0.15);
+
+  @include up(lg) {
+    display: none;
+  }
+}
+
+.progress {
+  height: 100%;
+  background: var(--gradient-accent);
+  transform-origin: left;
+}
+
+.mobileCar {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 25px;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  filter: drop-shadow(0 0 3px rgb(225 6 0 / 0.35));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .car,
+  .mobileCar {
+    display: none;
+  }
+}

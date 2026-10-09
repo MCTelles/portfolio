@@ -1,0 +1,488 @@
+@use '@/styles/mixins' as *;
+
+.hero {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: var(--space-6);
+  min-height: 100svh;
+  padding: calc(var(--nav-height) + var(--space-6)) var(--gutter) var(--space-7);
+  overflow: hidden;
+  isolation: isolate;
+
+  @include up(md) {
+    align-content: center;
+  }
+}
+
+// Mobile: o circuito é um bloco próprio acima do texto (fundo atrás do título ficaria ilegível).
+// Desktop: camada de fundo à direita.
+.canvas {
+  position: relative;
+  z-index: -1;
+  height: 38svh;
+  margin: calc(-1 * var(--space-6)) calc(-1 * var(--gutter)) 0;
+
+  // As bordas esmaecem com um degradê POR CIMA do canvas, não com mask-image: mascarar um
+  // canvas WebGL obriga o navegador a recompor a camada inteira fora da tela a cada frame.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--color-bg), transparent 25%);
+    pointer-events: none;
+  }
+
+  @include up(md) {
+    position: absolute;
+    inset: 0 0 0 36%;
+    height: auto;
+    margin: 0;
+  }
+
+  @include up(lg) {
+    inset: 0 0 12% 44%;
+    transform: translateY(calc(-1 * clamp(2rem, 6svh, 5rem)));
+
+    &::after {
+      background:
+        linear-gradient(to right, var(--color-bg), transparent 18%),
+        linear-gradient(to top, var(--color-bg), transparent 20%);
+    }
+  }
+}
+
+// Brilho vermelho de fundo, visível antes do 3D carregar (e se o WebGL falhar)
+.backdrop {
+  position: absolute;
+  inset: 15% 5%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 60%, rgb(225 6 0 / 0.22), transparent 65%);
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  width: min(100%, var(--container));
+  margin-inline: auto;
+  // Deixa o arraste passar para o canvas; só os elementos interativos capturam o ponteiro.
+  pointer-events: none;
+
+  a,
+  button {
+    pointer-events: auto;
+  }
+
+  @include up(lg) {
+    top: calc(-1 * clamp(2rem, 6svh, 5rem));
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-2);
+  background: var(--color-accent);
+  color: #fff;
+  transform: skewX(var(--skew));
+  @include timing-label;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    animation: blink 1.4s steps(2, start) infinite;
+  }
+}
+
+.title {
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  font-style: italic;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.highlight {
+  @include gradient-text;
+  // Evita que o itálico corte a última letra no background-clip
+  padding-right: 0.08em;
+}
+
+.lead {
+  max-width: 44ch;
+  margin-top: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--fs-lg);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+/* ---------- HUD de telemetria ---------- */
+
+.hudSlot {
+  width: min(100%, var(--container));
+  margin-inline: auto;
+
+  // Desktop: barra horizontal na base, como o "lower third" das transmissões
+  @include up(lg) {
+    position: absolute;
+    right: var(--gutter);
+    bottom: var(--space-6);
+    width: min(720px, 56vw);
+  }
+}
+
+.hudWrapper {
+  display: grid;
+  gap: var(--space-2);
+}
+
+// Seletor de circuito: abas com a sigla, como no letreiro de transmissão
+.hudTabs {
+  display: flex;
+  gap: var(--space-1);
+
+  button {
+    padding: 4px var(--space-3);
+    border: 1px solid var(--color-border-strong);
+    background: rgb(13 15 22 / 0.92);
+    color: var(--color-text-muted);
+    transform: skewX(var(--skew));
+    transition:
+      background var(--duration),
+      color var(--duration),
+      border-color var(--duration);
+    @include timing-label;
+
+    span {
+      display: inline-block;
+      transform: skewX(calc(var(--skew) * -1));
+    }
+
+    &:hover {
+      border-color: rgb(255 255 255 / 0.32);
+      color: var(--color-text);
+    }
+
+    &[aria-pressed='true'] {
+      border-color: var(--color-accent);
+      background: var(--color-accent);
+      color: #fff;
+    }
+  }
+}
+
+.hud {
+  position: relative;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-top: 2px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  // Fundo sólido, sem backdrop-filter: o blur seria recalculado a cada frame,
+  // porque o 3D atrás do HUD muda 60 vezes por segundo.
+  background: rgb(13 15 22 / 0.92);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.hudCamera {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin: 0 0 var(--space-3) auto;
+  padding: 3px var(--space-3);
+  background: var(--color-accent);
+  color: #fff;
+  transform: skewX(var(--skew));
+  transition: background var(--duration);
+  @include timing-label;
+  font-size: 0.625rem;
+
+  span {
+    display: inline-block;
+    transform: skewX(calc(var(--skew) * -1));
+  }
+
+  &:hover {
+    background: var(--color-accent-strong);
+  }
+
+  &[aria-pressed='true'] {
+    background: var(--color-sector-purple);
+  }
+
+  @include up(sm) {
+    position: absolute;
+    top: calc(var(--space-4) - 4px);
+    right: var(--space-4);
+    margin-bottom: 0;
+  }
+}
+
+.hudGrid {
+  display: grid;
+  grid-template-areas:
+    'header'
+    'speed'
+    'sectors'
+    'times'
+    'corner';
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+
+  @include up(sm) {
+    grid-template-areas:
+      'header header'
+      'speed times'
+      'sectors sectors'
+      'corner corner';
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  @include up(lg) {
+    grid-template-areas:
+      'header header header'
+      'speed sectors times'
+      'corner corner corner';
+    grid-template-columns: 170px minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: var(--space-5);
+  }
+}
+
+.hudSpeedBlock {
+  grid-area: speed;
+}
+
+.hudHeader {
+  grid-area: header;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  @include timing-label;
+
+  @include up(sm) {
+    padding-right: 136px; // espaço do botão de câmera
+  }
+
+  span:last-child {
+    margin-right: auto;
+  }
+}
+
+.hudFlag {
+  width: 16px;
+  height: 12px;
+  @include checkered(3px);
+}
+
+.hudMuted {
+  color: var(--color-text-subtle);
+}
+
+.hudSpeed {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.hudSpeedValue {
+  min-width: 3ch;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.hudUnit {
+  color: var(--color-text-muted);
+  @include timing-label;
+}
+
+.hudGear {
+  display: grid;
+  justify-items: end;
+  margin-left: auto;
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1.1;
+
+  span:first-child {
+    @include timing-label;
+    font-size: 0.625rem;
+  }
+}
+
+// Barra de "acelerador": a largura acompanha a velocidade
+.hudSpeedBar {
+  --fill: 0;
+  display: block;
+  height: 4px;
+  margin-top: var(--space-3);
+  background: rgb(255 255 255 / 0.08);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--color-sector-green),
+      var(--color-sector-yellow),
+      var(--color-accent)
+    );
+    transform: scaleX(var(--fill));
+    transform-origin: left;
+    transition: transform 80ms linear;
+  }
+}
+
+.hudSectors {
+  grid-area: sectors;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-1);
+
+  li {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-1) var(--space-2);
+    border-bottom: 3px solid rgb(255 255 255 / 0.12);
+    background: rgb(255 255 255 / 0.03);
+    font-size: var(--fs-xs);
+    transition:
+      border-color var(--duration),
+      background var(--duration);
+
+    span:first-child {
+      color: var(--color-text-subtle);
+    }
+  }
+
+  // Setor fechado = roxo (volta mais rápida), setor atual pisca em branco
+  li[data-state='done'] {
+    border-color: var(--color-sector-purple);
+    background: rgb(177 76 255 / 0.12);
+  }
+
+  li[data-state='current'] {
+    border-color: #fff;
+    animation: pulse 1s ease-in-out infinite alternate;
+  }
+}
+
+.hudTimes {
+  grid-area: times;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+
+  dt {
+    color: var(--color-text-subtle);
+    @include timing-label;
+    font-size: 0.625rem;
+  }
+
+  dd {
+    font-size: var(--fs-lg);
+    font-weight: 600;
+  }
+}
+
+.hudBest {
+  color: var(--color-sector-purple);
+}
+
+.hudCorner {
+  grid-area: corner;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+
+  @include up(lg) {
+    justify-self: end;
+    padding: 0 0 0 var(--space-4);
+    border-top: none;
+    border-left: 1px solid var(--color-border);
+  }
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ---------- Rótulos de curva no 3D ---------- */
+
+.labelsLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cornerLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 200ms;
+  will-change: transform;
+  display: inline-block;
+  padding: 2px 6px;
+  border-left: 2px solid var(--color-accent);
+  background: rgb(8 9 12 / 0.75);
+  color: var(--color-text);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  @include timing-label;
+  font-size: 0.625rem;
+}
+
+.loader {
+  color: var(--color-text-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+@keyframes pulse {
+  from {
+    background: rgb(255 255 255 / 0.03);
+  }
+  to {
+    background: rgb(255 255 255 / 0.1);
+  }
+}

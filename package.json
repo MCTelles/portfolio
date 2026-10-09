@@ -1,0 +1,45 @@
+{
+  "name": "portfolio-marcelo",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev -w @portfolio/api\" \"npm run dev -w @portfolio/web\"",
+    "build": "npm run build -w @portfolio/api && npm run build -w @portfolio/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "npm run test --workspaces --if-present",
+    "setup": "npm run db:up && npm run db:migrate && npm run db:seed",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:migrate": "npm run db:migrate -w @portfolio/api",
+    "db:seed": "npm run db:seed -w @portfolio/api",
+    "db:studio": "npm run db:studio -w @portfolio/api",
+    "model:generate": "npm run model:generate -w @portfolio/web"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.9",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1"
+  },
+  "allowScripts": {
+    "prisma@7.10.0": true,
+    "@prisma/engines@7.10.0": true,
+    "esbuild@0.28.2": true,
+    "@parcel/watcher": false,
+    "fsevents": false
+  }
+}

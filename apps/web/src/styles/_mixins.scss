@@ -1,0 +1,62 @@
+@use 'sass:map';
+@use 'tokens';
+
+/// Mobile-first: estilos base valem para telas pequenas; `up(md)` adiciona a partir de 900px.
+@mixin up($breakpoint) {
+  @media (min-width: map.get(tokens.$breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+@mixin focus-ring {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@mixin glass($alpha: 0.6) {
+  background: rgb(13 15 22 / #{$alpha});
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+@mixin gradient-text {
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@mixin card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+/// Bandeira quadriculada em CSS puro (sem imagem).
+@mixin checkered($size: 8px, $color: rgb(255 255 255 / 0.9)) {
+  background: conic-gradient(#{$color} 25%, transparent 0 50%, #{$color} 0 75%, transparent 0) 0 0 /
+    #{$size * 2} #{$size * 2};
+}
+
+/// Linhas de velocidade diagonais (fundo de placeholders e faixas).
+@mixin speed-lines($color: rgb(255 255 255 / 0.04), $gap: 14px) {
+  background-image: repeating-linear-gradient(115deg, #{$color} 0 1px, transparent 1px #{$gap});
+}
+
+/// Rótulo de cronometragem: mono, caixa alta, espaçado.
+@mixin timing-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}

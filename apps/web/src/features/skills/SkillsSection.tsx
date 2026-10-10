@@ -49,6 +49,7 @@ export function SkillsSection() {
 
   if (isError) return null;
 
+  const isEmpty = !isPending && skills.length === 0;
   const groups = groupByCategory(skills ?? []);
   // Siglas únicas no grid inteiro, na ordem em que aparecem
   const ordered = groups.flatMap((group) => group.skills);
@@ -64,43 +65,49 @@ export function SkillsSection() {
       title="Stack que uso no dia a dia"
       lead="Cada ferramenta com o seu tempo de pista: as cores seguem a cronometragem da F1."
     >
-      <ul className={styles.legend} aria-label="Legenda de níveis">
-        {LEGEND.map((tier) => (
-          <li key={tier} data-tier={tier}>
-            {LEVEL_TIER_LABELS[tier]}
-          </li>
-        ))}
-      </ul>
+      {isEmpty ? (
+        <p className={styles.state}>Torre ainda vazia: a stack entra na pista em breve.</p>
+      ) : (
+        <>
+          <ul className={styles.legend} aria-label="Legenda de níveis">
+            {LEGEND.map((tier) => (
+              <li key={tier} data-tier={tier}>
+                {LEVEL_TIER_LABELS[tier]}
+              </li>
+            ))}
+          </ul>
 
-      <div className={styles.grid} aria-busy={isPending}>
-        {groups.map((group, index) => (
-          <motion.section
-            key={group.category}
-            className={styles.tower}
-            style={{ '--team': SKILL_CATEGORY_COLORS[group.category] } as CSSProperties}
-            initial={{ opacity: 0, ...reveal }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
-            aria-label={SKILL_CATEGORY_LABELS[group.category]}
-          >
-            <header className={styles.towerHeader}>
-              <h3>{SKILL_CATEGORY_LABELS[group.category]}</h3>
-              <span>{group.skills.length}</span>
-            </header>
-            <ol className={styles.list}>
-              {group.skills.map((skill, position) => (
-                <TimingRow
-                  key={skill.id}
-                  skill={skill}
-                  position={position + 1}
-                  code={codes.get(skill.id) ?? ''}
-                />
-              ))}
-            </ol>
-          </motion.section>
-        ))}
-      </div>
+          <div className={styles.grid} aria-busy={isPending}>
+            {groups.map((group, index) => (
+              <motion.section
+                key={group.category}
+                className={styles.tower}
+                style={{ '--team': SKILL_CATEGORY_COLORS[group.category] } as CSSProperties}
+                initial={{ opacity: 0, ...reveal }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                aria-label={SKILL_CATEGORY_LABELS[group.category]}
+              >
+                <header className={styles.towerHeader}>
+                  <h3>{SKILL_CATEGORY_LABELS[group.category]}</h3>
+                  <span>{group.skills.length}</span>
+                </header>
+                <ol className={styles.list}>
+                  {group.skills.map((skill, position) => (
+                    <TimingRow
+                      key={skill.id}
+                      skill={skill}
+                      position={position + 1}
+                      code={codes.get(skill.id) ?? ''}
+                    />
+                  ))}
+                </ol>
+              </motion.section>
+            ))}
+          </div>
+        </>
+      )}
     </Section>
   );
 }

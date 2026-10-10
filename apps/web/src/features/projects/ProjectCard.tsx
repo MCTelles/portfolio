@@ -4,6 +4,7 @@ import { ExternalLinkIcon, GithubIcon } from '@/components/Icons';
 import { Tag } from '@/components/Tag';
 import { assetUrl } from '@/lib/api';
 import styles from './Projects.module.scss';
+import { useRevealOffset } from '@/hooks/useRevealOffset';
 
 interface ProjectCardProps {
   project: ProjectDTO;
@@ -12,14 +13,15 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, position }: ProjectCardProps) {
+  const reveal = useRevealOffset(-48);
   const cover = project.images[0];
   const isPole = position === 1;
 
   return (
     <motion.article
       className={`${styles.card} ${project.featured ? styles.featured : ''}`}
-      initial={{ opacity: 0, x: -48 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, ...reveal }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.7, delay: ((position - 1) % 3) * 0.08, ease: [0.16, 1, 0.3, 1] }}
     >

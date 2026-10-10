@@ -14,6 +14,7 @@ import {
 } from './categories';
 import { useSkills } from './queries';
 import styles from './Skills.module.scss';
+import { useRevealOffset } from '@/hooks/useRevealOffset';
 
 const LEGEND: LevelTier[] = ['purple', 'green', 'yellow', 'white'];
 
@@ -43,6 +44,7 @@ function TimingRow({ skill, position, code }: { skill: SkillDTO; position: numbe
 }
 
 export function SkillsSection() {
+  const reveal = useRevealOffset(-32);
   const { data: skills, isPending, isError } = useSkills();
 
   if (isError) return null;
@@ -76,8 +78,8 @@ export function SkillsSection() {
             key={group.category}
             className={styles.tower}
             style={{ '--team': SKILL_CATEGORY_COLORS[group.category] } as CSSProperties}
-            initial={{ opacity: 0, x: -32 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, ...reveal }}
+            whileInView={{ opacity: 1, x: 0, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.6, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
             aria-label={SKILL_CATEGORY_LABELS[group.category]}

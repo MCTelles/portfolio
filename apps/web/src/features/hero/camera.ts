@@ -8,16 +8,25 @@ const AERIAL_CAMERA = new Vector3(...AERIAL_CAMERA_POSITION);
 
 /** Largura (em unidades da cena) que precisa caber na tela: o traçado + margem para os rótulos. */
 const FRAMED_WIDTH = 10;
+/** No celular não há rótulos de curva: basta o traçado (9 unidades) com uma folga mínima. */
+const COMPACT_FRAMED_WIDTH = 9.4;
+/** Quanto a câmera pode se aproximar do padrão no celular, onde o canvas é um bloco baixo. */
+const COMPACT_MIN_FACTOR = 0.72;
 const VERTICAL_FOV = 36;
 
 /**
- * Posição aérea ajustada à proporção do canvas: em telas estreitas (celular) a câmera
- * recua até a volta inteira caber na largura. Nunca chega mais perto que o padrão.
+ * Posição aérea ajustada à proporção do canvas: a câmera recua até a volta inteira caber
+ * na largura. No desktop nunca chega mais perto que o padrão; no celular (`compact`) pode
+ * se aproximar, para o circuito ocupar o bloco em vez de ficar pequeno no meio dele.
  */
-export function aerialCameraFor(aspect: number): Vector3 {
+export function aerialCameraFor(aspect: number, compact = false): Vector3 {
   const halfFov = ((VERTICAL_FOV / 2) * Math.PI) / 180;
-  const requiredDistance = FRAMED_WIDTH / (2 * Math.tan(halfFov) * aspect);
-  const factor = Math.max(1, requiredDistance / AERIAL_CAMERA.length());
+  const width = compact ? COMPACT_FRAMED_WIDTH : FRAMED_WIDTH;
+  const requiredDistance = width / (2 * Math.tan(halfFov) * aspect);
+  const factor = Math.max(
+    compact ? COMPACT_MIN_FACTOR : 1,
+    requiredDistance / AERIAL_CAMERA.length(),
+  );
   return AERIAL_CAMERA.clone().multiplyScalar(factor);
 }
 

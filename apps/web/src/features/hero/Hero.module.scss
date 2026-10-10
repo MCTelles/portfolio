@@ -163,8 +163,17 @@
   gap: var(--space-1);
 
   button {
+    // Celular: as quatro abas dividem a largura, com altura confortável para o dedo
+    flex: 1;
+    min-height: 40px;
     padding: 4px var(--space-3);
     border: 1px solid var(--color-border-strong);
+
+    @include up(sm) {
+      flex: none;
+      min-height: 32px;
+    }
+
     background: rgb(13 15 22 / 0.92);
     color: var(--color-text-muted);
     transform: skewX(var(--skew));
@@ -194,7 +203,12 @@
 
 .hud {
   position: relative;
-  padding: var(--space-4);
+  padding: var(--space-3);
+
+  @include up(sm) {
+    padding: var(--space-4);
+  }
+
   border: 1px solid var(--color-border);
   border-top: 2px solid var(--color-accent);
   border-radius: var(--radius-md);
@@ -210,7 +224,8 @@
   z-index: 1;
   display: block;
   margin: 0 0 var(--space-3) auto;
-  padding: 3px var(--space-3);
+  min-height: 36px;
+  padding: var(--space-2) var(--space-3);
   background: var(--color-accent);
   color: #fff;
   transform: skewX(var(--skew));
@@ -248,7 +263,11 @@
     'times'
     'corner';
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-3);
+  gap: var(--space-2);
+
+  @include up(sm) {
+    gap: var(--space-3);
+  }
 
   @include up(sm) {
     grid-template-areas:
@@ -309,7 +328,12 @@
 
 .hudSpeedValue {
   min-width: 3ch;
-  font-size: 2.5rem;
+  font-size: 2rem;
+
+  @include up(sm) {
+    font-size: 2.5rem;
+  }
+
   font-weight: 700;
   line-height: 1;
 }

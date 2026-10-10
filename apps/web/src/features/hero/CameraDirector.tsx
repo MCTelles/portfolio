@@ -34,7 +34,9 @@ interface CameraDirectorProps {
 export function CameraDirector({ mode, carRef, carLengthRef }: CameraDirectorProps) {
   const camera = useThree((state) => state.camera);
   const aspect = useThree((state) => state.size.width / state.size.height);
-  const aerialPosition = useMemo(() => aerialCameraFor(aspect), [aspect]);
+  // Canvas estreito = celular (sem rótulos de curva): enquadramento mais justo
+  const compact = useThree((state) => state.size.width < 700);
+  const aerialPosition = useMemo(() => aerialCameraFor(aspect, compact), [aspect, compact]);
   const framedAspect = useRef<number | null>(null);
   const isTouch = useMediaQuery('(pointer: coarse)');
   const [orbitEnabled, setOrbitEnabled] = useState(true);

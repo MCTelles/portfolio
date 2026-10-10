@@ -1,11 +1,12 @@
 import { motion, useInView, useScroll, useTransform, type Variants } from 'motion/react';
-import { lazy, Suspense, useRef, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { ButtonLink } from '@/components/Button';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ArrowRightIcon } from '@/components/Icons';
 import { useProfile } from '@/features/about/queries';
 import type { CameraMode } from './camera';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useRevealOffset } from '@/hooks/useRevealOffset';
 import { CornerLabelsOverlay } from './CornerLabelsOverlay';
 import { TelemetryHud } from './TelemetryHud';
 import { useSelectedCircuit } from './useSelectedCircuit';
@@ -24,12 +25,6 @@ const container: Variants = {
   visible: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
 };
 
-// Entra deslizando da esquerda, como um carro saindo do box
-const item: Variants = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.9, ease: EASE } },
-};
-
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const { data: profile } = useProfile();
@@ -37,6 +32,16 @@ export function Hero() {
   const [cameraMode, setCameraMode] = useState<CameraMode>('aerial');
   const [circuitId, selectCircuit] = useSelectedCircuit();
   const isDesktop = useMediaQuery('(min-width: 900px)');
+
+  // Desktop: entra deslizando da esquerda, como um carro saindo do box. Celular: sobe de baixo.
+  const reveal = useRevealOffset(-40);
+  const item = useMemo<Variants>(
+    () => ({
+      hidden: { opacity: 0, x: reveal.x, y: reveal.y },
+      visible: { opacity: 1, x: 0, y: 0, transition: { duration: 0.9, ease: EASE } },
+    }),
+    [reveal.x, reveal.y],
+  );
   const showLabels = isDesktop && cameraMode === 'aerial';
 
   // 0 quando o Hero está no topo, 1 quando saiu totalmente da tela.

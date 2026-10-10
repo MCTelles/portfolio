@@ -3,6 +3,10 @@
 @use 'mixins' as *;
 
 html {
+  // Nenhum elemento pode alargar a página: no celular, algo que passe da borda faz o
+  // navegador aumentar o viewport inteiro (e a navbar fixa acompanha). `clip` corta sem
+  // criar um contêiner de rolagem, então position: sticky continua funcionando.
+  overflow-x: clip;
   scroll-behavior: smooth;
   scroll-padding-top: var(--nav-height);
 }

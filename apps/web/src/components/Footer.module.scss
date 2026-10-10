@@ -90,6 +90,13 @@
     gap: var(--space-5);
   }
 
+  // Área de toque confortável no celular (o texto continua pequeno)
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
   a:hover {
     color: var(--color-text);
   }

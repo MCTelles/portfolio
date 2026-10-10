@@ -5,6 +5,7 @@ import { useProjects } from '@/features/projects/queries';
 import { useSkills } from '@/features/skills/queries';
 import styles from './About.module.scss';
 import { useProfile } from './queries';
+import { useRevealOffset } from '@/hooks/useRevealOffset';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -17,6 +18,7 @@ const initials = (name: string) =>
     .join('');
 
 function DriverCard() {
+  const reveal = useRevealOffset(32);
   const { data: profile } = useProfile();
   const { data: projects } = useProjects();
   const { data: skills } = useSkills();
@@ -31,8 +33,8 @@ function DriverCard() {
   return (
     <motion.aside
       className={styles.card}
-      initial={{ opacity: 0, x: 32 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, ...reveal }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
       aria-label="Ficha do piloto"
@@ -98,6 +100,7 @@ function DriverCard() {
 }
 
 export function AboutSection() {
+  const reveal = useRevealOffset(-32);
   const { data: profile, isPending, isError } = useProfile();
 
   if (isError) return null;
@@ -113,8 +116,8 @@ export function AboutSection() {
       {!isPending && (
         <motion.div
           className={styles.bio}
-          initial={{ opacity: 0, x: -32 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, ...reveal }}
+          whileInView={{ opacity: 1, x: 0, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: EASE }}
         >

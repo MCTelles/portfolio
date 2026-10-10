@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 import styles from './Section.module.scss';
+import { useRevealOffset } from '@/hooks/useRevealOffset';
 
 interface SectionProps {
   id: string;
@@ -18,11 +19,12 @@ interface SectionProps {
 }
 
 export function Section({ id, number, eyebrow, title, lead, aside, children }: SectionProps) {
+  const reveal = useRevealOffset(-32);
   const header = (
     <motion.header
       className={styles.header}
-      initial={{ opacity: 0, x: -32 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, ...reveal }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
